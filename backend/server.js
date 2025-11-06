@@ -2,16 +2,23 @@ import express from 'express';
 import 'dotenv/config';
 import cors from 'cors';
 import {neon}  from '@neondatabase/serverless';
-import { clerkMiddleware, requireAuth } from '@clerk/express'
+import { clerkMiddleware } from '@clerk/express'
 import routes from './routes/route.js';
 import connectToCloudinary from './config/cloudinary.js';
-const app =express();
+const app = express();
 
-app.use(cors());
+// Frontend origin (set CLIENT_URL in Render env). Defaults to Vite dev server URL.
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:5173';
+
+app.use(cors({
+    origin: CLIENT_URL,
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    methods: ['GET','POST','PUT','DELETE','OPTIONS']
+}));
 connectToCloudinary();
 app.use(express.json());
 app.use(clerkMiddleware());
-app.use(requireAuth());
 app.use('/api',routes);
 
 const PORT=process.env.PORT || 5000;
