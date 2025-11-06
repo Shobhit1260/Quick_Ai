@@ -6,12 +6,6 @@ import { clerkMiddleware, requireAuth } from '@clerk/express'
 import routes from './routes/route.js';
 import connectToCloudinary from './config/cloudinary.js';
 const app =express();
-import('canvas').then((canvasPkg) => {
-  const { DOMMatrix, ImageData, Path2D } = canvasPkg;
-  if (!globalThis.DOMMatrix) globalThis.DOMMatrix = DOMMatrix;
-  if (!globalThis.ImageData) globalThis.ImageData = ImageData;
-  if (!globalThis.Path2D) globalThis.Path2D = Path2D;
-}).catch(e => console.warn('canvas missing', e));
 
 app.use(cors());
 connectToCloudinary();

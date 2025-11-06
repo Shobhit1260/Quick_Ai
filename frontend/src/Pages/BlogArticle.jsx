@@ -1,14 +1,51 @@
 import React from 'react'
 import {Edit, Hash, Sparkles} from 'lucide-react'
+import { toast } from 'react-toastify'
+import { reportError } from '../utils/reportError';
+import { useAuth } from '@clerk/clerk-react'
+import axios from 'axios'
+import Markdown from 'react-markdown'
 function BlogArticle() {
   const categories = [
     'General','Technology','Health','Business','Lifestyle','Travel','Food','Education'
   ]
   const [category,setCategory]=React.useState('General')
   const [input,setInput]=React.useState('')
+
+  const [content,setContent]=React.useState('');
+  const [loading,setLoading]=React.useState(false);
+  const {getToken}=useAuth(); 
+  
+  /** @param {any} e */
+  const submitHandler=async(e)=>{
+    e.preventDefault();
+    if(!input || !input.trim()){
+      toast.error('Please enter an article topic');
+      return;
+    }
+    setLoading(true);
+    const prompt= `Generate blog titles on the topic ${input} in the category ${category}.`
+    try{
+      const {data}=await axios.post('/generatetitle',{prompt:prompt, category:category},
+        {headers:{ Authorization:`Bearer ${await getToken()}` }}
+      );
+      if(data.success){
+        setContent(data.content)
+      } else {
+        toast.error("Something went wrong");
+      }
+    }
+    catch(error){
+      reportError(error, "Failed to generate title. Please try again.");
+    }
+    finally{
+      setLoading(false);
+      setInput('')
+    }
+  }
   return (
     <div className='h-full overflow-y-scroll p-6 flex items-start flex-wrap gap-4 text-slate-700'>
-      <form className='w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200' >
+      <form onSubmit={submitHandler} className='w-full max-w-lg p-4 bg-white rounded-lg border border-gray-200' >
         <div className='flex ites-center gap-3'>
           <Sparkles className='w-6 text-[#8E37EB]'/>
           <h1 className='text-xl font-semibold'>Ai Title Generator</h1>
@@ -31,7 +68,9 @@ function BlogArticle() {
         </div>
       <br/>
       <button className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#C341F6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
-        <Hash className='w-5 '/> Generate title
+         {
+          loading ? (<span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>):<Hash className='w-5 '/> 
+         }Generate title
       </button>
       </form>
       <div className='w-full max-w-lg p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96 max-h-[600px]' >
@@ -39,13 +78,21 @@ function BlogArticle() {
           <Hash className='w-5 h-5 text-[#8E37EB]'/>
           <h1 className='text-xl font-semibold'>Generated titles</h1>
         </div>
-        <div className='flex-1 flex justify-center items-center'>
-          <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
-            <Hash className='w-9 h-9'/>
-            <p>Enter a topic and click "Generate article" to get started</p>
-          </div>
-
-        </div>
+        {
+              !content ?
+               ( 
+                <div className='flex-1 flex justify-center items-center'>
+                  <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
+                    <Hash className='w-9 h-9'/>
+                    <p>Enter a topic and click "Generate title" to get started</p>
+                  </div>
+                  </div>
+               
+              ):(
+                <div className='w-full mt-5 overflow-y-scroll text-sm text-slate-800' >
+                  <Markdown>{content}</Markdown>
+                </div>
+              )}
       </div>
     </div>
   )

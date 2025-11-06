@@ -119,7 +119,7 @@ export const generateTitle = async (req,res)=>{
 
 export const generateImage = async (req,res)=>{ 
     try{
-        const {prompt,category,publish}=req.body;
+        const {prompt,publish}=req.body;
         const userId=req.user.id;
         const plan=req.plan;
         
@@ -232,9 +232,7 @@ export const removeBackground = async (req,res)=>{
       const {public_id} = await cloudinary.uploader.upload(image.path);
 
       const imageUrl=cloudinary.url(public_id,{
-        transformation:[
-          {effect:`gen_remove:${object}`}
-        ],
+        transformation:[{effect:`gen_remove:${object}`}],
         resource_type:'image'
        })
 
@@ -302,7 +300,7 @@ export const removeBackground = async (req,res)=>{
            },
            ],
            temperature: 0.7,
-           max_tokens: 1200 ,
+           max_tokens: 12000 ,
         });
 
         const content = response.choices?.[0]?.message?.content ?? 'No content generated';

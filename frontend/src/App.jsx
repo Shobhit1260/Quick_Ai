@@ -10,10 +10,12 @@ import RemoveBackground from './Pages/RemoveBackground'
 import ReviewResume from './Pages/ReviewResume'
 import WriteArticle from './Pages/WriteArticle'
 import RemoveObject from './Pages/RemoveObject'
+import { ToastContainer } from 'react-toastify'
 
 function App() {
   return (
     <div>
+      
       <Routes> 
          <Route path='/' element={<Home/>}/>
         <Route path='/ai' element={<Layout/>}>
@@ -27,6 +29,7 @@ function App() {
          <Route path='write-article' element={<WriteArticle/>}/>
         </Route>
       </Routes>
+      <ToastContainer/>
     </div>
   )
 }
