@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { reportError } from '../utils/reportError';
 import axios from 'axios';
 import { useAuth } from '@clerk/clerk-react';
+import Loader from '../Components/Loader'
 import Markdown from 'react-markdown';
 function ReviewResume() {
   
@@ -48,10 +49,8 @@ function ReviewResume() {
         <input onChange={(e)=>setInput(e.target.files[0])}  type="file" accept='application/pdf' className='w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border-none  bg-transparent' placeholder='No file chosen' required />
         <span className='text-xs text-gray-500 font-light mt-1'> Supports PDF resume only</span>
       <br/>
-      <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#00DA83] to-[#009BB3] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
-        {
-        loading ? (<span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>):<Eraser className='w-5 '/> 
-       }Review Resume
+      <button type="submit" disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#00DA83] to-[#009BB3] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
+        {loading ? <Loader size={24}/> : <Eraser className='w-5'/>} Review Resume
       </button>
       </form>
       <div className='w-full max-w-lg p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96 max-h-[600px]' >
@@ -59,21 +58,26 @@ function ReviewResume() {
           <FileText className='w-5 h-5 text-[#00DA83]'/>
           <h1 className='text-xl font-semibold'>Analysis Results</h1>
         </div>
-                     {
-                        !content ?
-                         ( 
-                          <div className='flex-1 flex justify-center items-center'>
-                            <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
-                            <FileText className='w-9 h-9'/>
-                            <p>Enter a file and click "Review Resume" to get started</p>
-                            </div>
-                          </div>
-                                     
-                          ):(
-                            <div className='w-full mt-5 overflow-y-scroll text-sm text-slate-800' >
-                                <Markdown>{content}</Markdown>
-                            </div>
-                          )}  
+        {
+          loading ? (
+            <div className='flex-1 flex justify-center items-center'>
+              <Loader size={240} />
+            </div>
+          ) : (
+            !content ? (
+              <div className='flex-1 flex justify-center items-center'>
+                <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
+                  <FileText className='w-9 h-9'/>
+                  <p>Enter a file and click "Review Resume" to get started</p>
+                </div>
+              </div>
+            ) : (
+              <div className='w-full mt-5 overflow-y-scroll text-sm text-slate-800' >
+                <Markdown>{content}</Markdown>
+              </div>
+            )
+          )
+        }  
       </div>
     </div>
   )

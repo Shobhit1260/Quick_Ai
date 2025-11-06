@@ -4,6 +4,7 @@ import { useAuth } from '@clerk/clerk-react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { reportError } from '../utils/reportError';
+import Loader from '../Components/Loader'
 function RemoveObject() {
   const [input,setInput]=React.useState('');
   const [object,setObject]=React.useState('');
@@ -51,10 +52,8 @@ function RemoveObject() {
       <br/>
       <p className='mt-6 text-sm font-medium'>Describe Object name to remove </p>
       <textarea onChange={(e)=>setObject(e.target.value)} value={object} rows={4} className=' w-full p-2 px-3 mt-2 outline-none text-sm rounded-md border border-gray-300' placeholder='e.g.., watch or spoon,Only single object name...' required />
-      <button disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#417DF6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
-        {
-          loading ? (<span className='w-4 h-4 my-1 rounded-full border-2 border-t-transparent animate-spin'></span>):<Eraser className='w-5 '/> 
-        } Remove Object
+      <button type="submit" disabled={loading} className='w-full flex justify-center items-center gap-2 bg-gradient-to-r from-[#417DF6] to-[#8E37EB] text-white px-4 py-2 mt-6 text-sm rounded-lg cursor-pointer'>
+        {loading ? <Loader size={24}/> : <Eraser className='w-5'/>} Remove Object
       </button>
       </form>
       <div className='w-full max-w-lg p-4 bg-white rounded-lg flex flex-col border border-gray-200 min-h-96 max-h-[600px]' >
@@ -63,16 +62,24 @@ function RemoveObject() {
           <h1 className='text-xl font-semibold'>Processed Image</h1>
         </div>
         {
-          !content?(<div className='flex-1 flex justify-center items-center'>
-          <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
-            <Scissors className='w-9 h-9'/>
-            <p>Upload an image and click "Remove Object" to get started </p>
-          </div>
-        </div>):(
-           <div className='w-full mt-5 overflow-y-scroll text-sm text-slate-800' >
-              <img className="" src={content} alt="image"  />
-           </div> 
-        )
+          loading ? (
+            <div className='flex-1 flex justify-center items-center'>
+              <Loader size={240} />
+            </div>
+          ) : (
+            !content ? (
+              <div className='flex-1 flex justify-center items-center'>
+                <div className='text-sm flex flex-col items-center gap-5 text-gray-400'>
+                  <Scissors className='w-9 h-9'/>
+                  <p>Upload an image and click "Remove Object" to get started </p>
+                </div>
+              </div>
+            ) : (
+              <div className='w-full mt-5 overflow-y-scroll text-sm text-slate-800' >
+                <img className="" src={content} alt="image"  />
+              </div>
+            )
+          )
         }
         
       </div>

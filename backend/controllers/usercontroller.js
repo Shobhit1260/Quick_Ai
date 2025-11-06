@@ -44,32 +44,41 @@ export const toggleLike=async(req,res)=>{
         const userId=req.user.id;
         const creationId=req.params.id;
         const creation=await sql `SELECT * FROM creations WHERE id=${creationId} `;
-         if(!creation){
+         if(!creation || creation.length === 0){
             return res.json({
                 success:false,
                 message:"Creation not found"
             })
          }
-        let likes=await creation[0].likes;
-        if(likes!=null && likes.includes(userId)){
-            likes.filter((id)=>id!==userId);    
+
+        // Normalize likes into an array we can modify
+        let likes = creation[0].likes;
+        if (!likes) likes = [];
+        if (typeof likes === 'string') {
+            try { likes = JSON.parse(likes); } catch (e) { likes = []; }
+        }
+        if (!Array.isArray(likes)) likes = [];
+
+        if (likes.includes(userId)){
+            likes = likes.filter((id)=>id!==userId);
         }
         else{
             likes.push(userId);
         }
 
-        const updatedCreation=await sql `UPDATE creations SET likes=${likes} WHERE id=${creationId} RETURNING *`;
+        const updatedRows=await sql `UPDATE creations SET likes=${likes} WHERE id=${creationId} RETURNING *`;
+        const updatedCreation = Array.isArray(updatedRows) ? updatedRows[0] : updatedRows;
 
-        res.json({
+        return res.json({
             success:true,
             updatedCreation
         })
 
     }
     catch(error){
-       res.json({
-            success:true,
-            message:"Error in fetching creations",
+       return res.json({
+            success:false,
+            message:"Error toggling like",
             error:error.message
         })
 
