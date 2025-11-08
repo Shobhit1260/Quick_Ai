@@ -14,7 +14,7 @@ app.use(cors());
 connectToCloudinary();
 app.use(express.json());
 app.use(clerkMiddleware());
-app.use('/api',requireAuth(),routes);
+app.use('/api',routes);
 
 const PORT=process.env.PORT || 5000;
 
