@@ -1,7 +1,6 @@
 {
-  "name": "backend",
+  "name": "y",
   "version": "1.0.0",
-  "description": "",
   "main": "server.js",
   "type": "module",
   "scripts": {
@@ -27,5 +26,6 @@
     "openai": "^6.8.1",
     "pdf-parse": "^1.1.1",
     "router": "^2.2.0"
-  }
+  },
+  "description": ""
 }
